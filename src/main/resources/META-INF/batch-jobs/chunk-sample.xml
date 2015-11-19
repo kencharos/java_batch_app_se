@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="chunk-sample"
+     xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+     version="1.0">
+    <step id="insert">
+        <chunk item-count="2">
+            <reader    ref="employeeFileReader">
+                <properties>
+                  <property name="input" value="c:/temp/input.txt"/>
+                </properties>
+            </reader>
+            <processor ref="employeeProcessor"/>
+            <writer    ref="employeeWriter"/>
+        </chunk>
+    </step>
+</job>
