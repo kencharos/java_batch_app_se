@@ -46,6 +46,8 @@ public class EmployeeWriter implements ItemWriter {
 
     @Override
     public void close() throws Exception {
+        System.out.println("close call;" + em.hashCode());
+        em.close();
     }
 
     @Override
