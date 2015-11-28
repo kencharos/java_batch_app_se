@@ -16,24 +16,22 @@ public class Runner {
 
     public static void main(String[] args) {
         
-        JobOperator jobOperator = BatchRuntime.getJobOperator();
-        
         // 同時実行
         CompletableFuture.allOf(
-            CompletableFuture.runAsync(() -> executeJob(jobOperator,"chunk-sample")),
-            CompletableFuture.runAsync(() -> executeJob(jobOperator,"chunk-sample"))
-            //CompletableFuture.runAsync(() -> executeJob(jobOperator,"cleanup-job"))
-          //  CompletableFuture.runAsync(() -> executeJob(jobOperator,"cleanup-job")),
-          //  CompletableFuture.runAsync(() -> executeJob(jobOperator,"cleanup-job"))
+            CompletableFuture.runAsync(() -> executeJob("chunk-sample")),
+            CompletableFuture.runAsync(() -> executeJob("chunk-sample")),
+            CompletableFuture.runAsync(() -> executeJob("chunk-sample")),
+            CompletableFuture.runAsync(() -> executeJob("chunk-sample"))
         ).join();
-        executeJob(jobOperator,"cleanup-job");
+        executeJob("cleanup-job");
         System.exit(0);
     }
     
-    private static void executeJob(JobOperator jobOperator, String jobId) {
+    private static void executeJob(String jobId) {
         long execID=0;
-        // ジョブの開始時はXML読み込みなど同時実行されるとおかしくなる処理があるので、同期化しておく。
-        synchronized(jobOperator){
+        // ジョブの開始時はXML読み込みなど同時実行されるとおかしくなる処理があるので、ジョブID単位で同期化しておく。
+        JobOperator jobOperator = BatchRuntime.getJobOperator();
+        synchronized(jobId){
             Properties props = new Properties();
             props.setProperty("date", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             execID = jobOperator.start(jobId, props);
@@ -43,6 +41,7 @@ public class Runner {
         // ジョブが終了するまでポーリング
         while (true) {
             jobExec = jobOperator.getJobExecution(execID);
+           
             if (jobExec.getEndTime() != null) {
                 break;
             }
