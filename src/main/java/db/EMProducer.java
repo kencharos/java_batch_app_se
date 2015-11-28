@@ -22,16 +22,14 @@ public class EMProducer {
     public EntityManager getEm() {
         // ホルダーにEMが無い場合やあるけどトランザクションが終了している場合(※1)は新規取得
         // ※1 ジョブの複数起動でスレッドが再利用された場合
-        if(holder.get() == null || !holder.get().isOpen()) {
+        if(holder.getEM()== null || !holder.getEM().isOpen()) {
             EntityManager em = emf.createEntityManager();
-            holder.add(em);
+            holder.setEM(em);
         }
         
-        EntityManager em = holder.get();
+        EntityManager em = holder.getEM();
         System.out.println(em.hashCode());
         
         return em;
     }
-    
-    
 }

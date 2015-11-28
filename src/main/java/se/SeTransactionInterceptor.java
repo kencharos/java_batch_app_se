@@ -45,7 +45,7 @@ public class SeTransactionInterceptor {
             }
             throw e;
         } finally{
-            holder.remove();
+            holder.removeEM();
             if(em.isOpen()) {
                 em.close();
             }
